@@ -41,3 +41,13 @@ spec:
 #   vNetName: {{ .Values.vnet.name }}
 #   subnetName: {{ .Values.subnet.name }}
 #   ignoreMissingServiceEndpoint: true
+---
+apiVersion: azure.microsoft.com/v1alpha1
+kind: PostgreSQLFirewallRule
+metadata:
+  name: postgresqlfirewallrule
+spec:
+  resourceGroup: {{ .Values.resourcegroup.name }}
+  server: {{ .Values.psql.server.name }}
+  startIpAddress: 0.0.0.0
+  endIpAddress: 0.0.0.0

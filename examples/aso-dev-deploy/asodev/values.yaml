@@ -2,9 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-registry:
-  host: docker.hub
-  org: frodopwns
+subscription: ""
+registry: exposurenotificationsserver.azurecr.io
 
 region: eastus
 
@@ -29,4 +28,9 @@ vnet:
 subnet:
   name: test1
 
-federation: false
+# services to deploy
+cleanup: true
+export: true
+exposure: true
+generate: true
+federation: true

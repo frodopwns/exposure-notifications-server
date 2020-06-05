@@ -1,4 +1,5 @@
-# blob store
+{{- if .Values.export }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,43 +21,46 @@ spec:
     spec:
       containers:
       - name: export
-        image: {{ .Values.registry.host }}/{{ .Values.registry.org }}/export:latest
+        image: {{ .Values.registry }}/export:latest
         ports:
           - containerPort: 8080
         env:
           - name: PORT
-            value: 8080
+            value: "8080"
           # storage
           - name: BLOBSTORE
-            value: AZURE_BLOB_STORAGE
+            value: "AZURE_BLOB_STORAGE"
           - name: AZURE_STORAGE_ACCOUNT
-            value: {{ .Values.storageaccount.name }}
+            value: {{ .Values.storageaccount.name | quote }}
           - name: AZURE_STORAGE_ACCESS_KEY
-            value: {{ .Values.storageaccount.accesskey }}
+            valueFrom:
+              secretKeyRef:
+                name: storageaccount-{{ .Values.resourcegroup.name }}-{{ .Values.storageaccount.name }}
+                key: key1
           # database
           - name: DB_NAME
-            value: {{ .Values.psql.database.name }}
+            value: {{ .Values.psql.database.name | quote }}
           - name: DB_USER
             valueFrom:
-            secretKeyRef:
-              name: {{ .Values.psql.server.name }}
-              key: username
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedUsername
           - name: DB_HOST
             valueFrom:
-            secretKeyRef:
-              name: {{ .Values.psql.server.name }}
-              key: fullyQualifiedServerName
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedServerName
           - name: DB_PORT
-            value: 5432
+            value: "5432"
           - name: DB_SSLMODE
-            value: require
+            value: "require"
           - name: DB_CONNECT_TIMEOUT
-            value: 30
+            value: "30"
           - name: DB_PASSWORD
             valueFrom:
-            secretKeyRef:
-              name: {{ .Values.psql.server.name }}
-              key: password
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: password
           - name: DB_SSLCERT
             value: ""
           - name: DB_SSLKEY
@@ -67,13 +71,15 @@ spec:
             value: ""
           - name: DB_POOL_MAX_CONNS
             value: ""
-          - name: DB_POOL_MAX_CONN_LIFETIME
-            value: ""     
-          - name: DB_POOL_MAX_CONN_IDLE_TIME
-            value: ""
-          - name: DB_POOL_HEALTH_CHECK_PERIOD
-            value: ""
+          # - name: DB_POOL_MAX_CONN_LIFETIME
+          #   value: ""     
+          # - name: DB_POOL_MAX_CONN_IDLE_TIME
+          #   value: ""
+          # - name: DB_POOL_HEALTH_CHECK_PERIOD
+          #   value: ""
           # secrets
+          - name: SECRET_MANAGER
+            value: "AZURE_KEY_VAULT"
           - name: AZURE_CLIENT_ID
             valueFrom:
               secretKeyRef:
@@ -98,18 +104,19 @@ spec:
                 name: azureoperatorsettings
           # export specific
           - name: CREATE_BATCHES_TIMEOUT
-            value: 5m
+            value: "5m"
           - name: WORKER_TIMEOUT
-            value: 5m
+            value: "5m"
           - name: EXPORT_FILE_MIN_RECORDS
-            value: 1000
+            value: "1000"
           - name: EXPORT_FILE_PADDING_RANGE
-            value: 100
+            value: "100"
           - name: EXPORT_FILE_MAX_RECORDS
-            value: 30000
+            value: "30000"
           - name: TRUNCATE_WINDOW
-            value: 1h
+            value: "1h"
           - name: MIN_WINDOW_AGE
-            value: 2h
+            value: "2h"
           - name: CLEANUP_TTL
-            value: 336h
+            value: "336h"
+{{- end }}
