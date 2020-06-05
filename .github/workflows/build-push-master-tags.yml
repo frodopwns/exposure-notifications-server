@@ -32,7 +32,9 @@ jobs:
             for i in "cleanup-export" "cleanup-exposure" "export" "exposure" "federationin" "federationout" "generate"; do
             echo "Building" $i
             docker build . --build-arg SERVICE=$i --tag ${{ secrets.REGISTRY_LOGIN_SERVER }}/$i:${{ github.sha }}
+            docker tag ${{ secrets.REGISTRY_LOGIN_SERVER }}/$i:${{ github.sha }} ${{ secrets.REGISTRY_LOGIN_SERVER }}/$i:latest
             echo "Pushing" $i
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/$i:${{ github.sha }}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/$i:latest
             done
 
