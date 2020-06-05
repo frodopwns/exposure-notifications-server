@@ -1,0 +1,27 @@
+{{- if ne .Values.schedule.cleanupExposure "" }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-exposure
+  labels:
+    component: cleanup-exposure
+    app: exposure-notifications-server
+spec:
+  schedule: {{ .Values.schedule.cleanupExposure | quote }}
+  jobTemplate:
+    metadata:
+      labels:
+        component: cleanup-exposure
+        app: exposure-notifications-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleanup-exposure
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; curl -X POST http://cleanup-exposure/
+          restartPolicy: OnFailure
+{{- end }}

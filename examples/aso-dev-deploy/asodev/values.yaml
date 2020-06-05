@@ -28,9 +28,16 @@ vnet:
 subnet:
   name: test1
 
-# services to deploy
-cleanup: true
+# services
+cleanupExport: true
+cleanupExposure: true
 export: true
 exposure: true
 generate: true
 federation: true
+
+# crons
+schedule:
+  exportBatches: "*/5 * * * *"
+  cleanupExport: "0 */6 * * *"
+  cleanupExposure: "0 */4 * * *"
