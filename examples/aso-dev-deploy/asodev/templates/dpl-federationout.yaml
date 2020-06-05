@@ -17,6 +17,9 @@ spec:
       labels:
         component: federationout
         app: exposure-notifications-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
     spec:
       containers:
       - name: federationout
@@ -26,6 +29,8 @@ spec:
         env:
           - name: PORT
             value: "8080"
+          - name: OBSERVABILITY_EXPORTER
+            value: "OCAGENT"
           - name: RPC_TIMEOUT
             value: "10m"
           - name: TRUNCATE_WINDOW
@@ -101,5 +106,4 @@ spec:
               secretKeyRef:
                 key: AZURE_SUBSCRIPTION_ID
                 name: azureoperatorsettings
-
 {{- end }}
