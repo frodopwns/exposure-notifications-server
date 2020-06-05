@@ -1,0 +1,15 @@
+apiVersion: azure.microsoft.com/v1alpha1
+kind: VirtualNetwork
+metadata:
+  name: {{ .Values.vnet.name }}
+spec:
+  location: {{ .Values.region }}
+  resourceGroup: {{ .Values.resourcegroup}}
+  addressSpace: "10.0.0.0/8"
+  subnets:
+    - subnetName: {{ .Values.subnet.name }}
+      subnetAddressPrefix: "10.1.0.0/16"
+      # Optional: enable service endpoints
+      serviceEndpoints:
+        - Microsoft.Storage
+      # - Microsoft.Sql

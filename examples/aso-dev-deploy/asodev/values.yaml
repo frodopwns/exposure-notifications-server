@@ -1,0 +1,32 @@
+# Default values for asodev.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+registry:
+  host: docker.hub
+  org: frodopwns
+
+region: eastus
+
+resourcegroup:
+  name: rg-expotest-dev
+
+keyvault:
+  name: kv-expotest-dev
+
+psql:
+  server:
+    name: srv-expotest-dev
+  database:
+    name: db-expotest-dev
+
+storageaccount:
+  name: saexpotestdev
+
+vnet:
+  name: vnet-expotest-dev
+
+subnet:
+  name: test1
+
+federation: false
