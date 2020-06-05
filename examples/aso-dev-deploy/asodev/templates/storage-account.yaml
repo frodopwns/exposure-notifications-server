@@ -1,0 +1,35 @@
+apiVersion: azure.microsoft.com/v1alpha1
+kind: StorageAccount
+metadata:
+  name: {{ .Values.storageaccount.name }}
+spec:
+  location: {{ .Values.region }}
+  resourceGroup: {{ .Values.resourcegroup.name }}
+  sku:
+    name: Standard_RAGRS
+  kind: StorageV2
+  accessTier: Hot
+  supportsHttpsTrafficOnly: true
+# Optional: networkRule
+  networkRule:
+    bypass: AzureServices # Possible values are AzureServices, Metrics, None, Logging
+    defaultAction: Deny # Possible values are Allow, Deny
+    # virtualNetworkRules:
+      # - subnetId: /subscriptions/{{ .Values.subscription }}/resourceGroups/{{ .Values.resourcegroup.name }}/providers/Microsoft.Network/virtualNetworks/{{ .Values.vnet.name }}/subnets/{{ .Values.subnet.name }}
+    # ipRules: #could be an ip range or a ip address
+    #   - ipAddressOrRange: 0.0.0.0
+  #     - ipAddressOrRange: 2.2.2.1
+
+---
+
+apiVersion: azure.microsoft.com/v1alpha1
+kind: BlobContainer
+metadata:
+  name: blobcontainer-sample
+spec:
+  location: {{ .Values.region }}
+  resourcegroup: {{ .Values.resourcegroup.name }}
+  accountname: {{ .Values.storageaccount.name }}
+  # accessLevel - Specifies whether data in the container may be accessed publicly and the level of access.
+  # Possible values include: 'Container', 'Blob', 'None'
+  accesslevel: Container

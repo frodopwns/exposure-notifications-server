@@ -1,0 +1,30 @@
+# blob store
+{{- if .Values.federation }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: federationout
+  labels:
+    component: federationout
+    app: exposure-notifications-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: federationout
+      app: exposure-notifications-server
+  template:
+    metadata:
+      labels:
+        component: federationout
+        app: exposure-notifications-server
+    spec:
+      containers:
+      - name: federationout
+        image: {{ .Values.registry.host }}/{{ .Values.registry.org }}/federationout:latest
+        ports:
+          - containerPort: 8080
+        env:
+          - name: PORT
+            value: 8080
+{{- end }}
