@@ -1,4 +1,3 @@
-# blob store
 {{- if .Values.federation }}
 apiVersion: apps/v1
 kind: Deployment
@@ -21,10 +20,86 @@ spec:
     spec:
       containers:
       - name: federationout
-        image: {{ .Values.registry.host }}/{{ .Values.registry.org }}/federationout:latest
+        image: {{ .Values.registry }}/federationout:latest
         ports:
           - containerPort: 8080
         env:
           - name: PORT
-            value: 8080
+            value: "8080"
+          - name: RPC_TIMEOUT
+            value: "10m"
+          - name: TRUNCATE_WINDOW
+            value: "1h"
+          - name: ALLOW_ANY_CLIENT
+            value: "false"
+          - name: TLS_CERT_FILE
+            value: ""
+          - name: TLS_KEY_FILE 
+            value: ""
+          # database
+          - name: DB_NAME
+            value: {{ .Values.psql.database.name }}
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedUsername
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedServerName
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_SSLMODE
+            value: "require"
+          - name: DB_CONNECT_TIMEOUT
+            value: "30"
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: password
+          - name: DB_SSLCERT
+            value: ""
+          - name: DB_SSLKEY
+            value: ""
+          - name: DB_SSLROOTCERT
+            value: ""
+          - name: DB_POOL_MIN_CONNS
+            value: ""
+          - name: DB_POOL_MAX_CONNS
+            value: ""
+          # - name: DB_POOL_MAX_CONN_LIFETIME
+          #   value: ""     
+          # - name: DB_POOL_MAX_CONN_IDLE_TIME
+          #   value: ""
+          # - name: DB_POOL_HEALTH_CHECK_PERIOD
+          #   value: ""
+          # secrets
+          - name: SECRET_MANAGER
+            value: "AZURE_KEY_VAULT"
+          - name: AZURE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: AZURE_CLIENT_ID
+                name: azureoperatorsettings
+                optional: true
+          - name: AZURE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: AZURE_CLIENT_SECRET
+                name: azureoperatorsettings
+                optional: true
+          - name: AZURE_TENANT_ID
+            valueFrom:
+              secretKeyRef:
+                key: AZURE_TENANT_ID
+                name: azureoperatorsettings
+          - name: AZURE_SUBSCRIPTION_ID
+            valueFrom:
+              secretKeyRef:
+                key: AZURE_SUBSCRIPTION_ID
+                name: azureoperatorsettings
+
 {{- end }}

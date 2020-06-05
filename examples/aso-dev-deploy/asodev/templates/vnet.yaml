@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.vnet.name }}
 spec:
   location: {{ .Values.region }}
-  resourceGroup: {{ .Values.resourcegroup}}
+  resourceGroup: {{ .Values.resourcegroup.name }}
   addressSpace: "10.0.0.0/8"
   subnets:
     - subnetName: {{ .Values.subnet.name }}
