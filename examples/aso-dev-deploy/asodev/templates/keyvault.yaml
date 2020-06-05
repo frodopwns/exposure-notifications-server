@@ -1,0 +1,14 @@
+apiVersion: azure.microsoft.com/v1alpha1
+kind: KeyVault
+metadata:
+  name: {{ .Values.keyvault.name }}
+  #labels: # Provide tags to add to the KeyVault as labels
+  #  tag1: value1
+  #  tag2: value2
+spec:
+  resourceGroup: {{ .Values.resourcegroup.name }}
+  location: {{ .Values.region }}
+  enableSoftDelete: false
+  # Optional: possible values for sku.Name are "Standard" or "Premium". Default is "Standard"
+  #sku:
+  #  name: standard
