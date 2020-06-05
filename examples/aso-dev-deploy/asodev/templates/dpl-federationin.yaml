@@ -1,4 +1,3 @@
-# blob store
 {{- if .Values.federation }}
 apiVersion: apps/v1
 kind: Deployment
@@ -21,18 +20,18 @@ spec:
     spec:
       containers:
       - name: federationin
-        image: {{ .Values.registry.host }}/{{ .Values.registry.org }}/federationin:latest
+        image: {{ .Values.registry }}/federationin:latest
         ports:
           - containerPort: 8080
         env:
           - name: PORT
-            value: 8080
+            value: "8080"
           - name: RPC_TIMEOUT
-            value: 10m
+            value: "10m"
           - name: TRUNCATE_WINDOW
-            value: 1h
+            value: "1h"
           - name: TLS_SKIP_VERIFY
-            value: false
+            value: "false"
           - name: TLS_CERT_FILE
             value: ""
           - name: CREDENTIALS_FILE 
@@ -42,25 +41,25 @@ spec:
             value: {{ .Values.psql.database.name }}
           - name: DB_USER
             valueFrom:
-            secretKeyRef:
-              name: {{ .Values.psql.server.name }}
-              key: username
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedUsername
           - name: DB_HOST
             valueFrom:
-            secretKeyRef:
-              name: {{ .Values.psql.server.name }}
-              key: fullyQualifiedServerName
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedServerName
           - name: DB_PORT
-            value: 5432
+            value: "5432"
           - name: DB_SSLMODE
-            value: require
+            value: "require"
           - name: DB_CONNECT_TIMEOUT
-            value: 30
+            value: "30"
           - name: DB_PASSWORD
             valueFrom:
-            secretKeyRef:
-              name: {{ .Values.psql.server.name }}
-              key: password
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: password
           - name: DB_SSLCERT
             value: ""
           - name: DB_SSLKEY
@@ -71,13 +70,15 @@ spec:
             value: ""
           - name: DB_POOL_MAX_CONNS
             value: ""
-          - name: DB_POOL_MAX_CONN_LIFETIME
-            value: ""     
-          - name: DB_POOL_MAX_CONN_IDLE_TIME
-            value: ""
-          - name: DB_POOL_HEALTH_CHECK_PERIOD
-            value: ""
+          # - name: DB_POOL_MAX_CONN_LIFETIME
+          #   value: ""     
+          # - name: DB_POOL_MAX_CONN_IDLE_TIME
+          #   value: ""
+          # - name: DB_POOL_HEALTH_CHECK_PERIOD
+          #   value: ""
           # secrets
+          - name: SECRET_MANAGER
+            value: "AZURE_KEY_VAULT"
           - name: AZURE_CLIENT_ID
             valueFrom:
               secretKeyRef:
