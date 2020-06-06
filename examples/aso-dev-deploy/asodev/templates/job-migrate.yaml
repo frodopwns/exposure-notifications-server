@@ -1,0 +1,44 @@
+{{- if .Values.migrate }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate
+  labels:
+    component: migrate
+    app: exposure-notifications-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrate
+        image: {{ .Values.registry }}/migrate:latest
+        command: ["sh", "-c"]
+        args:
+          - "/usr/local/bin/migrate -database postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE) -path migrations up"
+        env:
+          - name: DB_NAME
+            value: {{ .Values.psql.database.name }}
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedUsername
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: fullyQualifiedServerName
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_SSLMODE
+            value: "require"
+          - name: DB_CONNECT_TIMEOUT
+            value: "30"
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.psql.server.name }}
+                key: password
+      restartPolicy: Never
+  backoffLimit: 4
+{{- end }}

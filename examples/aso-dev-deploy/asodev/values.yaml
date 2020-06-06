@@ -17,7 +17,7 @@ psql:
   server:
     name: srv-expotest-dev
   database:
-    name: db-expotest-dev
+    name: main
 
 storageaccount:
   name: saexpotestdev
@@ -35,9 +35,11 @@ export: true
 exposure: true
 generate: true
 federation: true
+migrate: true
+admin: true
 
 # crons
 schedule:
-  exportBatches: "*/5 * * * *"
-  cleanupExport: "0 */6 * * *"
-  cleanupExposure: "0 */4 * * *"
+  exportBatches: "*/5 * * * *" #"*/5 * * * *"
+  cleanupExport: "*/5 * * * *" #"0 */6 * * *"
+  cleanupExposure: "*/5 * * * *" #"0 */4 * * *"
