@@ -18,7 +18,7 @@ spec:
         spec:
           containers:
           - name: cleanup-export
-            image: busybox
+            image: curlimages/curl
             args:
             - /bin/sh
             - -c
