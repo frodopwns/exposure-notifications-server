@@ -41,5 +41,6 @@ admin: true
 # crons
 schedule:
   exportBatches: "*/5 * * * *" #"*/5 * * * *"
+  createBatches: "*/5 * * * *" #"*/5 * * * *"
   cleanupExport: "*/5 * * * *" #"0 */6 * * *"
   cleanupExposure: "*/5 * * * *" #"0 */4 * * *"
