@@ -1,53 +1,39 @@
-{{- if .Values.generate }}
+{{- if .Values.admin }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: generate
+  name: admin-console
   labels:
-    component: generate
+    component: admin-console
     app: exposure-notifications-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: generate
+      component: admin-console
       app: exposure-notifications-server
   template:
     metadata:
       labels:
-        component: generate
+        component: admin-console
         app: exposure-notifications-server
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
     spec:
       containers:
-      - name: generate
-        image: {{ .Values.registry }}/generate:latest
+      - name: admin-console
+        image: {{ .Values.registry }}/admin-console:latest
         ports:
           - containerPort: 8080
         env:
           - name: PORT
             value: "8080"
-          - name: OBSERVABILITY_EXPORTER
-            value: "OCAGENT"
-          - name: NUM_EXPOSURES_GENERATED
-            value: "10"
-          - name: KEYS_PER_EXPOSURE
-            value: "14"
-          - name: MAX_KEYS_ON_PUBLISH
-            value: "15"
-          - name: MAX_INTERVAL_AGE_ON_PUBLISH
-            value: "360h"
-          - name: TRUNCATE_WINDOW
-            value: "1h"
-          - name: DEFAULT_REGOIN
-            value: "US"
           # storage
           - name: BLOBSTORE
             value: "AZURE_BLOB_STORAGE"
           - name: AZURE_STORAGE_ACCOUNT
-            value: {{ .Values.storageaccount.name | quote }}
+            value: {{ .Values.storageaccount.name }}
           - name: AZURE_STORAGE_ACCESS_KEY
             valueFrom:
               secretKeyRef:

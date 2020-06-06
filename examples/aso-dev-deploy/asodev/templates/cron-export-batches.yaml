@@ -18,7 +18,7 @@ spec:
         spec:
           containers:
           - name: export-batches
-            image: busybox
+            image: curlimages/curl
             args:
             - /bin/sh
             - -c
