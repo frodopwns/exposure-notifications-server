@@ -1,0 +1,29 @@
+{{- define "exposure-notification.database" -}}
+{{- if and .Values.database.aso .Values.database.aso.psql }}
+{{- include "exposure-notification.aso-psql" . -}}
+{{- end }}
+- name: DB_NAME
+  value: {{ .Values.database.db_name | quote }}
+- name: DB_PORT
+  value: "5432"
+- name: DB_SSLMODE
+  value: "require"
+- name: DB_CONNECT_TIMEOUT
+  value: "30"
+- name: DB_SSLCERT
+  value: ""
+- name: DB_SSLKEY
+  value: ""
+- name: DB_SSLROOTCERT
+  value: ""
+- name: DB_POOL_MIN_CONNS
+  value: ""
+- name: DB_POOL_MAX_CONNS
+  value: ""
+# - name: DB_POOL_MAX_CONN_LIFETIME
+#   value: ""
+# - name: DB_POOL_MAX_CONN_IDLE_TIME
+#   value: ""
+# - name: DB_POOL_HEALTH_CHECK_PERIOD
+#   value: ""
+{{- end -}}
