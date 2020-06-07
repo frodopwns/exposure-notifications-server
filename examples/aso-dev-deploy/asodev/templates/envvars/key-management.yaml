@@ -1,0 +1,4 @@
+{{- define "exposure-notification.key-management" -}}
+- name: KEY_MANAGER
+  value: {{ .Values.key_management.type }}
+{{- end -}}

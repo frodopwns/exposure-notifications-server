@@ -31,8 +31,6 @@ spec:
         env:
           - name: PORT
             value: "8080"
-          - name: OBSERVABILITY_EXPORTER
-            value: {{ .Values.observability_exporter.type }}
           - name: TARGET_REQUEST_DURATION
             value: "5s"
           - name: MAX_KEYS_ON_PUBLISH
@@ -44,73 +42,10 @@ spec:
           # authorization
           - name: AUTHORIZED_APP_CACHE_DURATION
             value: "5m"
-          # database
-          - name: DB_NAME
-            value: {{ .Values.database.db_name | quote }}
-{{- if and .Values.database.aso .Values.database.aso.psql }}
-          - name: DB_USER
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.database.aso.psql.server_name | quote }}
-                key: fullyQualifiedUsername
-          - name: DB_HOST
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.database.aso.psql.server_name | quote }}
-                key: fullyQualifiedServerName
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.database.aso.psql.server_name | quote }}
-                key: password
-{{- end }}
-          - name: DB_PORT
-            value: "5432"
-          - name: DB_SSLMODE
-            value: "require"
-          - name: DB_CONNECT_TIMEOUT
-            value: "30"
-          - name: DB_SSLCERT
-            value: ""
-          - name: DB_SSLKEY
-            value: ""
-          - name: DB_SSLROOTCERT
-            value: ""
-          - name: DB_POOL_MIN_CONNS
-            value: ""
-          - name: DB_POOL_MAX_CONNS
-            value: ""
-          # - name: DB_POOL_MAX_CONN_LIFETIME
-          #   value: ""
-          # - name: DB_POOL_MAX_CONN_IDLE_TIME
-          #   value: ""
-          # - name: DB_POOL_HEALTH_CHECK_PERIOD
-          #   value: ""
-          # secrets
-          - name: SECRET_MANAGER
-            value: {{ .Values.secrets_management.type }}
-{{- if ne .Values.azure.service_principal_secret "" }}
-          - name: AZURE_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: AZURE_CLIENT_ID
-                name: {{ .Values.azure.service_principal_secret }}
-                optional: true
-          - name: AZURE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: AZURE_CLIENT_SECRET
-                name: {{ .Values.azure.service_principal_secret }}
-                optional: true
-          - name: AZURE_TENANT_ID
-            valueFrom:
-              secretKeyRef:
-                key: AZURE_TENANT_ID
-                name: {{ .Values.azure.service_principal_secret }}
-          - name: AZURE_SUBSCRIPTION_ID
-            valueFrom:
-              secretKeyRef:
-                key: AZURE_SUBSCRIPTION_ID
-                name: {{ .Values.azure.service_principal_secret }}
+{{ include "exposure-notification.observability-exporter" . | indent 10 }}
+{{ include "exposure-notification.database" . | indent 10 }}
+{{ include "exposure-notification.secrets-management" . | indent 10 }}
+{{- if .Values.azure }}
+{{ include "exposure-notification.azure-service-principal" . | indent 10 }}
 {{- end }}
 {{- end }}
