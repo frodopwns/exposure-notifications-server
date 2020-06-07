@@ -1,10 +1,10 @@
-{{- if and .Values.key_managment.aso .Values.key_management.aso.keyvault .Values.key_management.aso.keyvault.key }}
+{{- if and .Values.key_management.aso .Values.key_management.aso.keyvault .Values.key_management.aso.keyvault.key }}
 apiVersion: azure.microsoft.com/v1alpha1
 kind: KeyVaultKey
 metadata:
   name: {{ .Values.key_management.aso.keyvault.key.name }}
 spec:
-  resourceGroup: {{ .Values.azure.resourcesgroup.name }}
+  resourceGroup: {{ .Values.azure.resourcegroup.name }}
   location: {{ .Values.azure.region }}
   keyVault: {{ .Values.key_management.aso.keyvault.name }}
   # type can be RSA, RSAHSM, EC, ECHSM
