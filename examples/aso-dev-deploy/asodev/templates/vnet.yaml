@@ -1,15 +1,17 @@
+{{- if and .Values.azure .Values.azure.vnet .Values.azure.vnet.aso }}
 apiVersion: azure.microsoft.com/v1alpha1
 kind: VirtualNetwork
 metadata:
-  name: {{ .Values.vnet.name }}
+  name: {{ .Values.azure.vnet.name | quote }}
 spec:
-  location: {{ .Values.region }}
-  resourceGroup: {{ .Values.resourcegroup.name }}
-  addressSpace: "10.0.0.0/8"
+  location: {{ .Values.azure.region }}
+  resourceGroup: {{ .Values.azure.resourcegroup.name | quote }}
+  addressSpace: {{ .Values.azure.vnet.addressSpace | quote }}
   subnets:
-    - subnetName: {{ .Values.subnet.name }}
-      subnetAddressPrefix: "10.1.0.0/16"
+    - subnetName: {{ .Values.azure.subnet.name | quote }}
+      subnetAddressPrefix: {{ .Values.azure.subnet.addressPrefix | quote }}
       # Optional: enable service endpoints
       serviceEndpoints:
         - Microsoft.Storage
       # - Microsoft.Sql
+{{- end }}

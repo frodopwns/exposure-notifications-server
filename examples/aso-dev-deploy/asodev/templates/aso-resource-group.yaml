@@ -1,0 +1,8 @@
+{{- if .Values.azure.resourcegroup.aso }}
+apiVersion: azure.microsoft.com/v1alpha1
+kind: ResourceGroup
+metadata:
+  name: {{ .Values.azure.resourcegroup.name }}
+spec:
+  location: {{ .Values.azure.region }}
+{{- end }}
