@@ -24,48 +24,53 @@ spec:
     spec:
       containers:
       - name: export
-        image: {{ .Values.registry }}/export:latest
+        image: {{ .Values.image.registry }}/export:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pull_policy | quote }}
         ports:
           - containerPort: 8080
         env:
           - name: PORT
             value: "8080"
           - name: OBSERVABILITY_EXPORTER
-            value: "OCAGENT"
+            value: {{ .Values.observability_exporter.type | quote }}
           # storage
           - name: BLOBSTORE
-            value: "AZURE_BLOB_STORAGE"
+            value: {{ .Values.blob_storage.type | quote }}
+{{- if .Values.blob_storage.aso }}
           - name: AZURE_STORAGE_ACCOUNT
-            value: {{ .Values.storageaccount.name | quote }}
+            value: {{ .Values.blob_storage.aso.account_name | quote }}
           - name: AZURE_STORAGE_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                name: storageaccount-{{ .Values.resourcegroup.name }}-{{ .Values.storageaccount.name }}
+                name: storageaccount-{{ .Values.azure.resourcegroup.name }}-{{ .Values.blob_storage.aso.account_name }}
                 key: key1
+{{- end }}
           # database
           - name: DB_NAME
-            value: {{ .Values.psql.database.name | quote }}
+            value: {{ .Values.database.db_name | quote }}
+{{- if and .Values.database.aso .Values.database.aso.psql }}
           - name: DB_USER
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.psql.server.name }}
+                name: {{ .Values.database.aso.psql.server_name | quote }}
                 key: fullyQualifiedUsername
           - name: DB_HOST
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.psql.server.name }}
+                name: {{ .Values.database.aso.psql.server_name | quote }}
                 key: fullyQualifiedServerName
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.database.aso.psql.server_name | quote }}
+                key: password
+{{- end }}
           - name: DB_PORT
             value: "5432"
           - name: DB_SSLMODE
             value: "require"
           - name: DB_CONNECT_TIMEOUT
             value: "30"
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.psql.server.name }}
-                key: password
           - name: DB_SSLCERT
             value: ""
           - name: DB_SSLKEY
@@ -77,36 +82,38 @@ spec:
           - name: DB_POOL_MAX_CONNS
             value: ""
           # - name: DB_POOL_MAX_CONN_LIFETIME
-          #   value: ""     
+          #   value: ""
           # - name: DB_POOL_MAX_CONN_IDLE_TIME
           #   value: ""
           # - name: DB_POOL_HEALTH_CHECK_PERIOD
           #   value: ""
           # secrets
           - name: SECRET_MANAGER
-            value: "AZURE_KEY_VAULT"
+            value: {{ .Values.secrets_management.type }}
+{{- if ne .Values.azure.service_principal_secret "" }}
           - name: AZURE_CLIENT_ID
             valueFrom:
               secretKeyRef:
                 key: AZURE_CLIENT_ID
-                name: azureoperatorsettings
+                name: {{ .Values.azure.service_principal_secret }}
                 optional: true
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
                 key: AZURE_CLIENT_SECRET
-                name: azureoperatorsettings
+                name: {{ .Values.azure.service_principal_secret }}
                 optional: true
           - name: AZURE_TENANT_ID
             valueFrom:
               secretKeyRef:
                 key: AZURE_TENANT_ID
-                name: azureoperatorsettings
+                name: {{ .Values.azure.service_principal_secret }}
           - name: AZURE_SUBSCRIPTION_ID
             valueFrom:
               secretKeyRef:
                 key: AZURE_SUBSCRIPTION_ID
-                name: azureoperatorsettings
+                name: {{ .Values.azure.service_principal_secret }}
+{{- end }}
           # export specific
           - name: CREATE_BATCHES_TIMEOUT
             value: "5m"

@@ -2,38 +2,71 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-subscription: ""
-registry: exposurenotificationsserver.azurecr.io
+image:
+  registry: exposurenotificationsserver.azurecr.io
+  tag: latest
+  pull_policy: Always
 
-region: eastus
+blob_storage:
+  type: AZURE_BLOB_STORAGE
+  aso:
+    account_name: saexpotestdev
+    container_name: blobcontainer-sample
 
-resourcegroup:
-  name: rg-expotest-dev
 
-keyvault:
-  name: kv-expotest-dev
+key_management:
+  type: AZURE_KEY_VAULT
+  aso:
+    keyvault:
+      name: kv-expo-keys
+      key:
+        name: kvk-expotest-dev
+        type: EC
+        curve: P256
+        operations:
+        - sign
 
-keyvaultkeys:
-  name: kvk-expotest-dev
-  type: EC
-  curve: P256
-  operations:
-    - sign
+secrets_management:
+  type: AZURE_KEY_VAULT
+  aso:
+    keyvault:
+      name: kv-expo-secrets
 
-psql:
-  server:
-    name: srv-expotest-dev
-  database:
-    name: main
+database:
+  db_name: main
 
-storageaccount:
-  name: saexpotestdev
+  aso:
+    psql:
+      server_name: srv-expotest-dev
+      server_version: "10"
+      ssl_enforcement: Enabled
+      sku:
+        name: GP_Gen5_4 # Name - The name of the sku, typically, tier + family + cores, e.g. B_Gen4_1, GP_Gen5_8.
+        tier: GeneralPurpose  # possible values - 'Basic', 'GeneralPurpose', 'MemoryOptimized'
+        family: Gen5
+        size: "51200"
+        capacity: 4
+      firewall:
+        startIP: 0.0.0.0
+        endIP: 0.0.0.0
 
-vnet:
-  name: vnet-expotest-dev
+observability_exporter:
+  type: OCAGENT # possible values "OCAGENT", "STACKDRIVER"
 
-subnet:
-  name: test1
+azure:
+  subscription: ""
+  region: eastus
+  resourcegroup:
+    aso: true
+    name: rg-expotest-dev
+  subnet:
+    name: test1
+    addressPrefix: "10.1.0.0/16"
+  vnet:
+    aso: true
+    name: vnet-expotest-dev
+    addressSpace: "10.0.0.0/8"
+  service_principal_secret: azureoperatorsettings
 
 # services
 cleanupExport: true
