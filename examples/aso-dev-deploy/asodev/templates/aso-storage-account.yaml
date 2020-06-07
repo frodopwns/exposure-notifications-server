@@ -1,10 +1,11 @@
+{{- if .Values.blob_storage.aso }}
 apiVersion: azure.microsoft.com/v1alpha1
 kind: StorageAccount
 metadata:
-  name: {{ .Values.storageaccount.name }}
+  name: {{ .Values.blob_storage.aso.account_name | quote }}
 spec:
-  location: {{ .Values.region }}
-  resourceGroup: {{ .Values.resourcegroup.name }}
+  location: {{ .Values.azure.region | quote }}
+  resourceGroup: {{ .Values.azure.resourcegroup.name | quote }}
   sku:
     name: Standard_RAGRS
   kind: StorageV2
@@ -15,7 +16,7 @@ spec:
     bypass: AzureServices # Possible values are AzureServices, Metrics, None, Logging
     defaultAction: Deny # Possible values are Allow, Deny
     # virtualNetworkRules:
-      # - subnetId: /subscriptions/{{ .Values.subscription }}/resourceGroups/{{ .Values.resourcegroup.name }}/providers/Microsoft.Network/virtualNetworks/{{ .Values.vnet.name }}/subnets/{{ .Values.subnet.name }}
+      # - subnetId: /subscriptions/{{ .Values.azure.subscription }}/resourceGroups/{{ .Values.azure.resourcegroup.name }}/providers/Microsoft.Network/virtualNetworks/{{ .Values.azure.vnet.name }}/subnets/{{ .Values.azure.subnet.name }}
     # ipRules: #could be an ip range or a ip address
     #   - ipAddressOrRange: 0.0.0.0
   #     - ipAddressOrRange: 2.2.2.1
@@ -25,11 +26,13 @@ spec:
 apiVersion: azure.microsoft.com/v1alpha1
 kind: BlobContainer
 metadata:
-  name: blobcontainer-sample
+  name: {{ .Values.blob_storage.aso.container_name | quote }}
 spec:
-  location: {{ .Values.region }}
-  resourcegroup: {{ .Values.resourcegroup.name }}
-  accountname: {{ .Values.storageaccount.name }}
+  location: {{ .Values.azure.region | quote }}
+  resourcegroup: {{ .Values.azure.resourcegroup.name | quote }}
+  accountname: {{ .Values.blob_storage.aso.account_name | quote }}
   # accessLevel - Specifies whether data in the container may be accessed publicly and the level of access.
   # Possible values include: 'Container', 'Blob', 'None'
   accesslevel: Container
+
+{{- end }}

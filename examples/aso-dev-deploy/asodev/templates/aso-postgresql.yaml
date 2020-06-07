@@ -1,0 +1,60 @@
+{{- if and .Values.database.aso .Values.database.aso.psql }}
+
+apiVersion: azure.microsoft.com/v1alpha1
+kind: PostgreSQLServer
+metadata:
+  name: {{ .Values.database.aso.psql.server_name }}
+spec:
+  location: {{ .Values.azure.region  }}
+  resourceGroup: {{ .Values.azure.resourcegroup.name }}
+  serverVersion: {{ .Values.database.aso.psql.server_version }}
+  sslEnforcement: {{ .Values.database.aso.psql.ssl_enforcement }}
+  createMode: Default # Possible values include: Default, Replica, PointInTimeRestore (not implemented), GeoRestore (not implemented)
+  sku:
+    name: {{ .Values.database.aso.psql.sku.name }}
+    tier: {{ .Values.database.aso.psql.sku.tier }}
+    family: {{ .Values.database.aso.psql.sku.family }}
+    size: {{ .Values.database.aso.psql.sku.size }}
+    capacity: {{ .Values.database.aso.psql.sku.capacity }}
+  # Use the field below to optionally specify a different keyvault
+  # to store the server admin credential secrets in
+  #keyVaultToStoreSecrets: asoSecretKeyVault
+
+---
+
+apiVersion: azure.microsoft.com/v1alpha1
+kind: PostgreSQLDatabase
+metadata:
+  name: {{ .Values.database.db_name }}
+spec:
+  resourceGroup: {{ .Values.azure.resourcegroup.name }}
+  server: {{ .Values.database.aso.psql.server_name }}
+
+# ---
+
+# apiVersion: azure.microsoft.com/v1alpha1
+# kind: PostgreSQLVNetRule
+# metadata:
+#   name: postgresqlvnetrule-rule1
+# spec:
+#   resourceGroup: {{ .Values.azure.resourcegroup.name }}
+#   server: {{ .Values.database.aso.psql.server_name }}
+#   vNetResourceGroup: {{ .Values.azure.resourcegroup.name }}
+#   vNetName: {{ .Values.azure.vnet.name }}
+#   subnetName: {{ .Values.azure.subnet.name }}
+#   ignoreMissingServiceEndpoint: true
+
+{{- if .Values.database.aso.psql.firewall }}
+---
+apiVersion: azure.microsoft.com/v1alpha1
+kind: PostgreSQLFirewallRule
+metadata:
+  name: postgresqlfirewallrule
+spec:
+  resourceGroup: {{ .Values.azure.resourcegroup.name }}
+  server: {{ .Values.database.aso.psql.server_name }}
+  startIpAddress: {{ .Values.database.aso.psql.startIP }}
+  endIpAddress: {{ .Values.database.aso.psql.endIP }}
+{{- end }}
+
+{{- end }}
