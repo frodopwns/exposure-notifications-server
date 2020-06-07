@@ -1,0 +1,7 @@
+{{- define "exposure-notification.blob-storage" -}}
+- name: BLOBSTORE
+  value: {{ .Values.blob_storage.type }}
+{{- if .Values.blob_storage.aso }}
+{{- include "exposure-notification.aso-blobstore" . -}}
+{{- end -}}
+{{- end -}}

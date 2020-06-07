@@ -1,0 +1,26 @@
+{{- define "exposure-notification.azure-service-principal" -}}
+{{- if ne .Values.azure.service_principal_secret "" -}}
+- name: AZURE_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      key: AZURE_CLIENT_ID
+      name: {{ .Values.azure.service_principal_secret }}
+      optional: true
+- name: AZURE_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      key: AZURE_CLIENT_SECRET
+      name: {{ .Values.azure.service_principal_secret }}
+      optional: true
+- name: AZURE_TENANT_ID
+  valueFrom:
+    secretKeyRef:
+      key: AZURE_TENANT_ID
+      name: {{ .Values.azure.service_principal_secret }}
+- name: AZURE_SUBSCRIPTION_ID
+  valueFrom:
+    secretKeyRef:
+      key: AZURE_SUBSCRIPTION_ID
+      name: {{ .Values.azure.service_principal_secret }}
+{{- end -}}
+{{- end -}}
