@@ -13,6 +13,13 @@ resourcegroup:
 keyvault:
   name: kv-expotest-dev
 
+keyvaultkeys:
+  name: kvk-expotest-dev
+  type: EC
+  curve: P256
+  operations:
+    - sign
+
 psql:
   server:
     name: srv-expotest-dev

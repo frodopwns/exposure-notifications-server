@@ -1,0 +1,13 @@
+apiVersion: azure.microsoft.com/v1alpha1
+kind: KeyVaultKey
+metadata:
+  name: {{ .Values.keyvaultkeys.name }}
+spec:
+  resourceGroup: {{ .Values.resourcesgroup.name }}
+  location: {{ .Values.region }}
+  keyVault: {{ .Values.keyvault.name }}
+  # type can be RSA, RSAHSM, EC, ECHSM
+  type: {{ .Values.keyvaultkeys.type }}
+  Curve: {{ .Values.keyvaultkeys.curve }}
+  #optional: defaults to all operations
+  operations: {{ .Values.keyvaultkeys.operations }}
