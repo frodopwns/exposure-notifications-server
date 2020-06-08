@@ -1,0 +1,173 @@
+name: Docker Build and Push
+
+on: [push]
+
+jobs:
+  build-push-admin-console:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: admin-console
+        dockerfile: docker/admin-console.dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-migration:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: migrate
+        dockerfile: docker/migrate-with-migrations.dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-cleanup-export:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: cleanup-export
+        build_args: SERVICE=cleanup-export
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-cleanup-exposure:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: cleanup-exposure
+        build_args: SERVICE=cleanup-exposure
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-export:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: export
+        build_args: SERVICE=export
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-exposure:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: exposure
+        build_args: SERVICE=exposure
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-federationin:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: federationin
+        build_args: SERVICE=federationin
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-federationout:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: federationout
+        build_args: SERVICE=federationout
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
+
+  build-push-generate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Build and Push'
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        repository: generate
+        build_args: SERVICE=generate
+        dockerfile: Dockerfile
+        tag_with_ref: true
+        always_pull: true
