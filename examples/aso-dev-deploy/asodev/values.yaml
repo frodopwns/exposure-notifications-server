@@ -22,7 +22,7 @@ key_management:
       key:
         name: kvk-expotest-dev
         type: EC
-        curve: P256
+        curve: P-256
         operations:
         - sign
 

@@ -23,16 +23,16 @@ spec:
 
 ---
 
-apiVersion: azure.microsoft.com/v1alpha1
+apiVersion: azure.microsoft.com/v1alpha2
 kind: BlobContainer
 metadata:
   name: {{ .Values.blob_storage.aso.container_name | quote }}
 spec:
   location: {{ .Values.azure.region | quote }}
-  resourcegroup: {{ .Values.azure.resourcegroup.name | quote }}
-  accountname: {{ .Values.blob_storage.aso.account_name | quote }}
+  resourceGroup: {{ .Values.azure.resourcegroup.name | quote }}
+  accountName: {{ .Values.blob_storage.aso.account_name | quote }}
   # accessLevel - Specifies whether data in the container may be accessed publicly and the level of access.
   # Possible values include: 'Container', 'Blob', 'None'
-  accesslevel: Container
+  accessLevel: Container
 
 {{- end }}

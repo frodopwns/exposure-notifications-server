@@ -51,6 +51,7 @@ spec:
 {{ include "exposure-notification.blob-storage" . | indent 10 }}
 {{ include "exposure-notification.database" . | indent 10 }}
 {{ include "exposure-notification.secrets-management" . | indent 10 }}
+{{ include "exposure-notification.key-management" . | indent 10 }}
 {{- if .Values.azure }}
 {{ include "exposure-notification.azure-service-principal" . | indent 10 }}
 {{- end }}
