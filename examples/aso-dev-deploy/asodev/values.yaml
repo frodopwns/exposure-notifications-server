@@ -55,6 +55,7 @@ observability_exporter:
 
 azure:
   subscription: ""
+  tenant: ""
   region: eastus
   resourcegroup:
     aso: true

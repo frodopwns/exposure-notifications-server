@@ -7,14 +7,14 @@ metadata:
 spec:
   location: {{ .Values.azure.region  }}
   resourceGroup: {{ .Values.azure.resourcegroup.name }}
-  serverVersion: {{ .Values.database.aso.psql.server_version }}
-  sslEnforcement: {{ .Values.database.aso.psql.ssl_enforcement }}
+  serverVersion: {{ .Values.database.aso.psql.server_version | quote }}
+  sslEnforcement: {{ .Values.database.aso.psql.ssl_enforcement | quote }}
   createMode: Default # Possible values include: Default, Replica, PointInTimeRestore (not implemented), GeoRestore (not implemented)
   sku:
     name: {{ .Values.database.aso.psql.sku.name }}
     tier: {{ .Values.database.aso.psql.sku.tier }}
     family: {{ .Values.database.aso.psql.sku.family }}
-    size: {{ .Values.database.aso.psql.sku.size }}
+    size: {{ .Values.database.aso.psql.sku.size | quote }}
     capacity: {{ .Values.database.aso.psql.sku.capacity }}
   # Use the field below to optionally specify a different keyvault
   # to store the server admin credential secrets in
@@ -53,8 +53,8 @@ metadata:
 spec:
   resourceGroup: {{ .Values.azure.resourcegroup.name }}
   server: {{ .Values.database.aso.psql.server_name }}
-  startIpAddress: {{ .Values.database.aso.psql.startIP }}
-  endIpAddress: {{ .Values.database.aso.psql.endIP }}
+  startIpAddress: {{ .Values.database.aso.psql.firewall.startIP }}
+  endIpAddress: {{ .Values.database.aso.psql.firewall.endIP }}
 {{- end }}
 
 {{- end }}

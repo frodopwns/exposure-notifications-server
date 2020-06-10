@@ -24,7 +24,7 @@ spec:
       containers:
       - name: federationin
         image: {{ .Values.image.registry }}/federationin:{{ .Values.image.tag }}
-        pullPolicy: {{ .Values.image.pull_policy }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         ports:
           - containerPort: 8080
         env:

@@ -10,6 +10,25 @@ spec:
   resourceGroup: {{ .Values.azure.resourcegroup.name }}
   location: {{ .Values.azure.region }}
   enableSoftDelete: false
+  accessPolicies:
+    - tenantID: {{ .Values.azure.tenant | quote }}
+      clientID: {{ .Values.azure.client_id | quote }}
+      # applicationID: <appID>
+      permissions:
+        keys: # backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey
+        - list
+        - get
+        - create
+        - delete
+      # secrets: # backup delete get list purge recover restore set
+      #   - list
+      #   - get
+      # certificates: # backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update
+      #   - list
+      #   - get
+      # storage: # backup delete deleteas get getas list listsas purge recover regeneratekey restore set setas update
+      #   - list
+      #   - get
   # Optional: possible values for sku.Name are "Standard" or "Premium". Default is "Standard"
   #sku:
   #  name: standard
