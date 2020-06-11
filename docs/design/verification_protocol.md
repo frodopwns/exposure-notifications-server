@@ -8,7 +8,7 @@ diagnosis certifications from public health authorities.
 
 The actual process of issuing these certificates is not covered in this
 document, but will be at a later date. A simple example of certificate signing
-is available in [tools/example-verification-signing](https://github.com/google/exposure-notifications-server/tree/master/tools/example-verification-signing) 
+is available in [tools/example-verification-signing](https://github.com/google/exposure-notifications-server/tree/master/tools/example-verification-signing)
 
 ## Motivation
 
@@ -62,7 +62,9 @@ First, using the standard claims.
 * `iss` : The issuer will be used to determine which public key(s) are valid for
 verification. This is to allow for key rotation.
 * `aud` : The audience must be as configured for this installation of the
-exposure notifications server.
+exposure notifications server. The operator of the exposure notifications server
+is the one to define this value and should be shared to all participating health
+authorities.
 * `iat` : The unix timestamp at which the token was issued.
 * `exp` : The unix timestamp at which the token will expire.
 * `nbf` : If present, the "not before" timestamp will be honored.
@@ -79,7 +81,9 @@ save the `phadata`
 * `trisk` : Contains an array of transmission risk overrides to enact when
 importing the associated keys. If data is present in this field, it will
 override the data in the upload from the device.
-* `keyVersion` : The version of the public key to use for verification.
+
+The verification server can indicate a specific key ID to use by setting the
+`kid` header attribute in the JWT.
 
 ### Transmission Risk Overrides
 
