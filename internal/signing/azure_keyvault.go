@@ -26,8 +26,8 @@ import (
 	"math/big"
 	"strings"
 
+	kvauth "github.com/Azure/azure-sdk-for-go/services/keyvault/auth"
 	"github.com/Azure/azure-sdk-for-go/services/keyvault/v7.0/keyvault"
-	"github.com/google/exposure-notifications-server/internal/azurekeyvault"
 	"github.com/google/exposure-notifications-server/internal/base64util"
 )
 
@@ -43,7 +43,7 @@ type AzureKeyVault struct {
 
 // NewAzureKeyVault creates a new KeyVault key manager instance.
 func NewAzureKeyVault(ctx context.Context) (KeyManager, error) {
-	authorizer, err := azurekeyvault.GetKeyVaultAuthorizer()
+	authorizer, err := kvauth.NewAuthorizerFromEnvironment()
 	if err != nil {
 		return nil, fmt.Errorf("secrets.NewAzureKeyVault: auth: %w", err)
 	}
