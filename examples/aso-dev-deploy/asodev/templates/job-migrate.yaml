@@ -15,7 +15,8 @@ spec:
         imagePullPolicy: {{ .Values.image.pull_policy | quote }}
         command: ["sh", "-c"]
         args:
-          - "/usr/local/bin/migrate -database postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE) -path migrations up"
+        # escape the entire connection string so that special characters are handled and pass to the migrate command.
+          - CONN_STRING=$(echo -n "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${DB_SSLMODE}" | hexdump -v -e '/1 "%02x"' | sed 's/\(..\)/%\1/g') /usr/local/bin/migrate -database ${CONN_STRING} -path migrations up
         env:
           - name: DB_NAME
             value: {{ .Values.database.db_name | quote }}
