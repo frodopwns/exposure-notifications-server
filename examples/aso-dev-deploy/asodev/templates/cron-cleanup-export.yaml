@@ -20,8 +20,15 @@ spec:
           - name: cleanup-export
             image: curlimages/curl
             args:
-            - /bin/sh
-            - -c
-            - date; curl -X POST http://cleanup-export/
+              - /bin/sh
+              - -c
+              - date; curl -X POST http://cleanup-export/
+            resources:
+              requests:
+                cpu: "1m"
+                memory: "40Mi"
+              limits:
+                cpu: "2m"
+                memory: "80Mi"
           restartPolicy: OnFailure
 {{- end }}

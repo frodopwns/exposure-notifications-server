@@ -25,6 +25,13 @@ spec:
         imagePullPolicy: {{ .Values.image.pull_policy }}
         ports:
           - containerPort: 8080
+        resources:
+          requests:
+            cpu: "12m"
+            memory: "100Mi"
+          limits:
+            cpu: "16m"
+            memory: "200Mi"
         env:
           - name: PORT
             value: "8080"
