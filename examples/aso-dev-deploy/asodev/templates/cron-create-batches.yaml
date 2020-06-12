@@ -20,8 +20,15 @@ spec:
           - name: export-batches
             image: curlimages/curl
             args:
-            - /bin/sh
-            - -c
-            - date; curl -X GET http://export/create-batches
+              - /bin/sh
+              - -c
+              - date; curl -X GET http://export/create-batches
+            resources:
+              requests:
+                cpu: "1m"
+                memory: "40Mi"
+              limits:
+                cpu: "2m"
+                memory: "80Mi"
           restartPolicy: OnFailure
 {{- end }}

@@ -1,0 +1,17 @@
+{{- if and .Values.autoscaling .Values.export }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: exposure
+  labels:
+    component: exposure
+    app: exposure-notifications-server
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: exposure
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+{{- end }}

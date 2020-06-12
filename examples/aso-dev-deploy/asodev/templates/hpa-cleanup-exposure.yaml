@@ -1,0 +1,17 @@
+{{- if and .Values.autoscaling .Values.exposure.enabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cleanup-exposure
+  labels:
+    component: cleanup-exposure
+    app: exposure-notifications-server
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cleanup-exposure
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+{{- end }}

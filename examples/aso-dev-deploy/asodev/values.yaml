@@ -82,6 +82,9 @@ federation: true
 migrate: true
 adminConsole: true
 
+# pod autoscaling for all the major deployments
+autoscaling: true
+
 # crons
 schedule:
   exportBatches: "*/5 * * * *" #"*/5 * * * *"
