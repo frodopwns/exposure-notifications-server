@@ -1,0 +1,16 @@
+{{- if and .Values.exposure.enabled .Values.exposure.ingress .Values.exposure.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: exposure
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.exposure.ingress.class | quote}}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: exposure
+          servicePort: 80
+        path: /
+{{- end }}
