@@ -1,14 +1,14 @@
-{{- if .Values.cleanupExport }}
+{{- if .Values.exposure.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: cleanup-export
+  name: exposure
   labels:
-    component: cleanup-export
+    component: exposure
     app: exposure-notifications-server
 spec:
   selector:
-    component: cleanup-export
+    component: exposure
     app: exposure-notifications-server
   ports:
     - protocol: TCP

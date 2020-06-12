@@ -13,7 +13,6 @@ blob_storage:
     account_name: saexpotestdev
     container_name: blobcontainer-sample
 
-
 key_management:
   type: AZURE_KEY_VAULT
   aso:
@@ -73,11 +72,15 @@ azure:
 cleanupExport: true
 cleanupExposure: true
 export: true
-exposure: true
+exposure:
+  enabled: true
+  ingress:
+    enabled: true
+    class: nginx
 generate: true
 federation: true
 migrate: true
-admin: true
+adminConsole: true
 
 # crons
 schedule:
