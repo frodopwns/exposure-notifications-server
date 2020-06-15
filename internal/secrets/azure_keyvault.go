@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/keyvault/keyvault"
-	"github.com/google/exposure-notifications-server/internal/azurekeyvault"
+	kvauth "github.com/Azure/azure-sdk-for-go/services/keyvault/auth"
 )
 
 // Compile-time check to verify implements interface.
@@ -33,7 +33,7 @@ type AzureKeyVault struct {
 
 // NewAzureKeyVault creates a new KeyVault that can interact fetch secrets.
 func NewAzureKeyVault(ctx context.Context) (SecretManager, error) {
-	authorizer, err := azurekeyvault.GetKeyVaultAuthorizer()
+	authorizer, err := kvauth.NewAuthorizerFromEnvironment()
 	if err != nil {
 		return nil, fmt.Errorf("secrets.NewAzureKeyVault: auth: %w", err)
 	}

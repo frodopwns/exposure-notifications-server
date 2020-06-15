@@ -1,0 +1,21 @@
+{{- if .Values.generate }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: generate
+  labels:
+    component: generate
+    app: exposure-notifications-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: generatejob
+        image: curlimages/curl
+        args:
+        - /bin/sh
+        - -c
+        - date; curl -X GET http://generate/
+      restartPolicy: OnFailure
+  backoffLimit: 10
+{{- end }}

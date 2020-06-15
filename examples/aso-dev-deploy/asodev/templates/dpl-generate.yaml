@@ -1,0 +1,53 @@
+{{- if .Values.generate }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generate
+  labels:
+    component: generate
+    app: exposure-notifications-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: generate
+      app: exposure-notifications-server
+  template:
+    metadata:
+      labels:
+        component: generate
+        app: exposure-notifications-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+      - name: generate
+        image: {{ .Values.image.registry }}/generate:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
+        ports:
+          - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"
+          - name: NUM_EXPOSURES_GENERATED
+            value: "10"
+          - name: KEYS_PER_EXPOSURE
+            value: "14"
+          - name: MAX_KEYS_ON_PUBLISH
+            value: "15"
+          - name: MAX_INTERVAL_AGE_ON_PUBLISH
+            value: "360h"
+          - name: TRUNCATE_WINDOW
+            value: "1h"
+          - name: DEFAULT_REGOIN
+            value: "US"
+{{ include "exposure-notification.observability-exporter" . | indent 10 }}
+{{ include "exposure-notification.blob-storage" . | indent 10 }}
+{{ include "exposure-notification.database" . | indent 10 }}
+{{ include "exposure-notification.secrets-management" . | indent 10 }}
+{{ include "exposure-notification.key-management" . | indent 10 }}
+{{- if .Values.azure }}
+{{ include "exposure-notification.azure-service-principal" . | indent 10 }}
+{{- end }}
+{{- end }}

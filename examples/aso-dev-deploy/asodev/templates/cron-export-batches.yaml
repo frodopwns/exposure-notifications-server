@@ -1,0 +1,27 @@
+{{- if ne .Values.schedule.exportBatches "" }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: export-batches
+  labels:
+    component: export-batches
+    app: exposure-notifications-server
+spec:
+  schedule: {{ .Values.schedule.exportBatches | quote }}
+  jobTemplate:
+    metadata:
+      labels:
+        component: export-batches
+        app: exposure-notifications-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: export-batches
+            image: curlimages/curl
+            args:
+            - /bin/sh
+            - -c
+            - date; curl -X GET http://export/do-work
+          restartPolicy: OnFailure
+{{- end }}

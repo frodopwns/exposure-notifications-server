@@ -1,0 +1,4 @@
+{{- define "exposure-notification.observability-exporter" -}}
+- name: OBSERVABILITY_EXPORTER
+  value: {{ .Values.observability_exporter.type }}
+{{- end -}}

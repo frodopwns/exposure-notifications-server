@@ -1,0 +1,11 @@
+{{- define "exposure-notification.aso-blobstore" -}}
+{{- if .Values.blob_storage.aso }}
+- name: AZURE_STORAGE_ACCOUNT
+  value: {{ .Values.blob_storage.aso.account_name | quote }}
+- name: AZURE_STORAGE_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: storageaccount-{{ .Values.azure.resourcegroup.name }}-{{ .Values.blob_storage.aso.account_name }}
+      key: key1
+{{- end }}
+{{- end -}}

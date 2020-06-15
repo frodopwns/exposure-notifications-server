@@ -1,0 +1,40 @@
+{{- if .Values.admin }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-console
+  labels:
+    component: admin-console
+    app: exposure-notifications-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: admin-console
+      app: exposure-notifications-server
+  template:
+    metadata:
+      labels:
+        component: admin-console
+        app: exposure-notifications-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+      - name: admin-console
+        image: {{ .Values.image.registry }}/admin-console:latest
+        imagePullPolicy: {{ .Values.image.pull_policy }}
+        ports:
+          - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"
+{{ include "exposure-notification.blob-storage" . | indent 10 }}
+{{ include "exposure-notification.database" . | indent 10 }}
+{{ include "exposure-notification.secrets-management" . | indent 10 }}
+{{ include "exposure-notification.key-management" . | indent 10 }}
+{{- if .Values.azure }}
+{{ include "exposure-notification.azure-service-principal" . | indent 10 }}
+{{- end }}
+{{- end }}

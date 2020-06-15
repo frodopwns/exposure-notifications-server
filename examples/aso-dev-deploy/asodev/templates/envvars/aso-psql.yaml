@@ -1,0 +1,19 @@
+{{- define "exposure-notification.aso-psql" -}}
+{{- if and .Values.database.aso .Values.database.aso.psql -}}
+- name: DB_USER
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.database.aso.psql.server_name | quote }}
+      key: fullyQualifiedUsername
+- name: DB_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.database.aso.psql.server_name | quote }}
+      key: fullyQualifiedServerName
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.database.aso.psql.server_name | quote }}
+      key: password
+{{- end -}}
+{{- end -}}
