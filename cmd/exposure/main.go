@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 
+	"contrib.go.opencensus.io/exporter/prometheus"
 	"github.com/google/exposure-notifications-server/internal/handlers"
 	"github.com/google/exposure-notifications-server/internal/interrupt"
 	"github.com/google/exposure-notifications-server/internal/logging"
@@ -28,7 +29,6 @@ import (
 	"github.com/google/exposure-notifications-server/internal/publish"
 	"github.com/google/exposure-notifications-server/internal/server"
 	"github.com/google/exposure-notifications-server/internal/setup"
-	"go.opencensus.io/exporter/prometheus"
 )
 
 func main() {
