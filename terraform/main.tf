@@ -169,14 +169,6 @@ resource "google_app_engine_application" "app" {
   location_id = var.appengine_location
 }
 
-output "project_id" {
-  value = data.google_project.project.project_id
-}
-
-output "project_number" {
-  value = data.google_project.project.number
-}
-
 output "region" {
   value = var.region
 }
@@ -207,4 +199,8 @@ output "cloudrun_location" {
 
 output "storage_location" {
   value = var.storage_location
+}
+
+output "project" {
+  value = data.google_project.project.project_id
 }

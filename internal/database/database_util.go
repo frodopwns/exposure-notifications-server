@@ -27,9 +27,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/exposure-notifications-server/pkg/retry"
-
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/google/exposure-notifications-server/internal/retry"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ory/dockertest"
 
@@ -117,6 +116,7 @@ func NewTestDatabaseWithConfig(tb testing.TB) (*DB, *Config) {
 		var err error
 		dbpool, err = pgxpool.Connect(ctx, connURL.String())
 		if err != nil {
+			tb.Logf("retrying error: %v", err)
 			return retry.RetryableError(err)
 		}
 		return nil

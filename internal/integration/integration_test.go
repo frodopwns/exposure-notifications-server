@@ -112,7 +112,8 @@ func testServer(tb testing.TB) (*serverenv.ServerEnv, *http.Client) {
 	if err != nil {
 		tb.Fatal(err)
 	}
-	mux.Handle("/export/", http.StripPrefix("/export", exportServer.Routes(ctx)))
+	mux.HandleFunc("/export/create-batches", exportServer.CreateBatchesHandler)
+	mux.HandleFunc("/export/do-work", exportServer.WorkerHandler)
 
 	// Federation
 	federationInConfig := &federationin.Config{

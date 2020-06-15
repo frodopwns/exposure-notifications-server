@@ -41,7 +41,7 @@ func (h *indexHandler) Execute(c *gin.Context) {
 
 	// Load authorized apps for index.
 	db := aadb.New(h.env.Database())
-	apps, err := db.ListAuthorizedApps(ctx)
+	apps, err := db.GetAllAuthorizedApps(ctx, h.env.SecretManager())
 	if err != nil {
 		admin.ErrorPage(c, err.Error())
 		return

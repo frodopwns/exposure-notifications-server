@@ -16,7 +16,7 @@
 
 set -eEuo pipefail
 
-IN="$(cat /dev/stdin)"
+read IN
 LENGTH="${#IN}"
 for (( i = 0; i < $LENGTH; i++ )); do
   c="${IN:i:1}"
