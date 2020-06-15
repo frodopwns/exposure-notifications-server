@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This package is the service that deletes old exposure keys; it is intended to be invoked over HTTP by Cloud Scheduler.
+// Package main runs the debugger service.
 package main
 
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"os"
 
-	"github.com/google/exposure-notifications-server/internal/cleanup"
+	"github.com/google/exposure-notifications-server/internal/debugger"
 	"github.com/google/exposure-notifications-server/internal/interrupt"
 	"github.com/google/exposure-notifications-server/internal/logging"
-	_ "github.com/google/exposure-notifications-server/internal/observability"
 	"github.com/google/exposure-notifications-server/internal/server"
 	"github.com/google/exposure-notifications-server/internal/setup"
-	"go.opencensus.io/exporter/prometheus"
 )
 
 func main() {
@@ -43,29 +39,16 @@ func main() {
 func realMain(ctx context.Context) error {
 	logger := logging.FromContext(ctx)
 
-	var config cleanup.Config
+	var config debugger.Config
 	env, err := setup.Setup(ctx, &config)
 	if err != nil {
 		return fmt.Errorf("setup.Setup: %w", err)
 	}
 	defer env.Close(ctx)
 
-	handler, err := cleanup.NewExposureHandler(&config, env)
+	debuggerServer, err := debugger.NewServer(&config, env)
 	if err != nil {
-		return fmt.Errorf("cleanup.NewExposureHandler: %w", err)
-	}
-
-	mux := http.NewServeMux()
-	mux.Handle("/", handler)
-
-	if v := os.Getenv("OBSERVABILITY_EXPORTER"); v == "OCAGENT" {
-		exporter, err := prometheus.NewExporter(prometheus.Options{})
-		if err != nil {
-			return fmt.Errorf("failed to create prometheus exporter: %v", err)
-		}
-
-		// Serve the scrape endpoint on port 9999.
-		mux.Handle("/metrics", exporter)
+		return fmt.Errorf("export.NewServer: %w", err)
 	}
 
 	srv, err := server.New(config.Port)
@@ -74,5 +57,5 @@ func realMain(ctx context.Context) error {
 	}
 	logger.Infof("listening on :%s", config.Port)
 
-	return srv.ServeHTTPHandler(ctx, mux)
+	return srv.ServeHTTPHandler(ctx, debuggerServer.Routes(ctx))
 }
