@@ -100,11 +100,11 @@ variable "generate_cron_schedule" {
   description = "Schedule to execute the generation service."
 }
 
-variable "deploy_debugger" {
-  type = bool
-  default = false
+variable "registry_cleanup_cron_schedule" {
+  type    = string
+  default = "0 0 1 1 0"
 
-  description = "Deploy the service debugger. Use only in testing."
+  description = "Schedule to execute cleanup of old Container Registry images."
 }
 
 variable "service_environment" {

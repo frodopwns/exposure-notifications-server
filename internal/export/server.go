@@ -15,13 +15,13 @@
 package export
 
 import (
-	"context"
 	"fmt"
-	"net/http"
-	"os"
+
+	coredb "github.com/google/exposure-notifications-server/internal/database"
+	"github.com/google/exposure-notifications-server/internal/export/database"
+	publishdb "github.com/google/exposure-notifications-server/internal/publish/database"
 
 	"github.com/google/exposure-notifications-server/internal/serverenv"
-	"go.opencensus.io/exporter/prometheus"
 )
 
 // NewServer makes a Server.
@@ -29,9 +29,6 @@ func NewServer(config *Config, env *serverenv.ServerEnv) (*Server, error) {
 	// Validate config.
 	if env.Blobstore() == nil {
 		return nil, fmt.Errorf("export.NewBatchServer requires Blobstore present in the ServerEnv")
-	}
-	if env.Database() == nil {
-		return nil, fmt.Errorf("export.NewBatchServer requires Database present in the ServerEnv")
 	}
 	if env.KeyManager() == nil {
 		return nil, fmt.Errorf("export.NewBatchServer requires KeyManager present in the ServerEnv")
@@ -41,33 +38,19 @@ func NewServer(config *Config, env *serverenv.ServerEnv) (*Server, error) {
 	}
 
 	return &Server{
-		config: config,
-		env:    env,
+		db:        env.Database(),
+		exportdb:  database.New(env.Database()),
+		publishdb: publishdb.New(env.Database()),
+		config:    config,
+		env:       env,
 	}, nil
 }
 
 // Server hosts end points to manage export batches.
 type Server struct {
-	config *Config
-	env    *serverenv.ServerEnv
-}
-
-// Routes defines and returns the routes for this server.
-func (s *Server) Routes(ctx context.Context) *http.ServeMux {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/create-batches", s.handleCreateBatches(ctx))
-	mux.HandleFunc("/do-work", s.handleDoWork(ctx))
-
-	if v := os.Getenv("OBSERVABILITY_EXPORTER"); v == "OCAGENT" {
-		exporter, err := prometheus.NewExporter(prometheus.Options{})
-		if err != nil {
-			return fmt.Errorf("failed to create prometheus exporter: %v", err)
-		}
-
-		// Serve the scrape endpoint on port 9999.
-		mux.Handle("/metrics", exporter)
-	}
-
-	return mux
+	db        *coredb.DB
+	exportdb  *database.ExportDB
+	publishdb *publishdb.PublishDB
+	config    *Config
+	env       *serverenv.ServerEnv
 }
