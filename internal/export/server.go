@@ -18,8 +18,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/google/exposure-notifications-server/internal/serverenv"
+	"go.opencensus.io/exporter/prometheus"
 )
 
 // NewServer makes a Server.
@@ -56,6 +58,16 @@ func (s *Server) Routes(ctx context.Context) *http.ServeMux {
 
 	mux.HandleFunc("/create-batches", s.handleCreateBatches(ctx))
 	mux.HandleFunc("/do-work", s.handleDoWork(ctx))
+
+	if v := os.Getenv("OBSERVABILITY_EXPORTER"); v == "OCAGENT" {
+		exporter, err := prometheus.NewExporter(prometheus.Options{})
+		if err != nil {
+			return fmt.Errorf("failed to create prometheus exporter: %v", err)
+		}
+
+		// Serve the scrape endpoint on port 9999.
+		mux.Handle("/metrics", exporter)
+	}
 
 	return mux
 }
