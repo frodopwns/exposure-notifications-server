@@ -100,7 +100,7 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 	case err := <-errCh:
 		return fmt.Errorf("failed to shutdown: %w", err)
 	case err := <-metricsErrCh:
-		return fmt.Errorf("failed to serve metrics endpoint: %w", err)
+		return fmt.Errorf("failed while serving metrics endpoint: %w", err)
 	default:
 		return nil
 	}

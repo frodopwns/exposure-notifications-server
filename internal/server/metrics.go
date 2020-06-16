@@ -36,20 +36,18 @@ func ServeMetricsIfPrometheus(ctx context.Context, errCh chan error) error {
 		if metricsPort == "" {
 			return fmt.Errorf("OBSERVABILITY_EXPORTER set to 'prometheus' but no METRICS_PORT set")
 		}
+
+		exporter, err := prometheus.NewExporter(prometheus.Options{})
+		if err != nil {
+			return fmt.Errorf("failed to create prometheus exporter: %v", err)
+		}
+
 		go func() {
-			exporter, err := prometheus.NewExporter(prometheus.Options{})
-			if err != nil {
-				logger.Debugf("failed to create prometheus exporter: %v", err)
-				select {
-				case errCh <- err:
-				default:
-				}
-			}
+			mux := http.NewServeMux()
+			mux.Handle("/metrics", exporter)
 
-			http.Handle("/metrics", exporter)
-
-			logger.Debugf("listening on :%s", metricsPort)
-			if http.ListenAndServe(":"+metricsPort, nil) != nil {
+			logger.Debugf("Metrics endpoint listening on :%s", metricsPort)
+			if http.ListenAndServe(":"+metricsPort, mux) != nil {
 				select {
 				case errCh <- err:
 				default:
