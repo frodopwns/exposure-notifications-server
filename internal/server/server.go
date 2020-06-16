@@ -89,23 +89,26 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 	exporter := os.Getenv("OBSERVABILITY_EXPORTER")
 	if strings.EqualFold(exporter, "prometheus") {
 		go func() {
-			mux := http.NewServeMux()
 
 			exporter, err := prometheus.NewExporter(prometheus.Options{})
 			if err != nil {
 				logger.Infof("failed to create prometheus exporter: %v", err)
+				select {
+				case errCh <- err:
+				default:
+				}
 			}
 
-			mux.Handle("/metrics", exporter)
-
-			srv, err := New("8888")
-			if err != nil {
-				logger.Infof("server.New: %w", err)
-			}
+			http.Handle("/metrics", exporter)
 
 			logger.Infof("listening on :%s", "8888")
 
-			srv.ServeHTTPHandler(ctx, mux)
+			if http.ListenAndServe(":8888", nil) != nil {
+				select {
+				case errCh <- err:
+				default:
+				}
+			}
 		}()
 	}
 
