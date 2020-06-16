@@ -21,12 +21,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"strconv"
-	"strings"
 	"time"
 
-	"contrib.go.opencensus.io/exporter/prometheus"
 	"github.com/google/exposure-notifications-server/internal/logging"
 	"go.opencensus.io/plugin/ochttp"
 	"google.golang.org/grpc"
@@ -86,30 +83,9 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 		}
 	}()
 
-	exporter := os.Getenv("OBSERVABILITY_EXPORTER")
-	if strings.EqualFold(exporter, "prometheus") {
-		go func() {
-
-			exporter, err := prometheus.NewExporter(prometheus.Options{})
-			if err != nil {
-				logger.Infof("failed to create prometheus exporter: %v", err)
-				select {
-				case errCh <- err:
-				default:
-				}
-			}
-
-			http.Handle("/metrics", exporter)
-
-			logger.Infof("listening on :%s", "8888")
-
-			if http.ListenAndServe(":8888", nil) != nil {
-				select {
-				case errCh <- err:
-				default:
-				}
-			}
-		}()
+	metricsErrCh := make(chan error, 1)
+	if err := ServeMetricsIfPrometheus(ctx, metricsErrCh); err != nil {
+		return fmt.Errorf("failed to serve metrics: %w", err)
 	}
 
 	// Run the server. This will block until the provided context is closed.
@@ -123,6 +99,8 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 	select {
 	case err := <-errCh:
 		return fmt.Errorf("failed to shutdown: %w", err)
+	case err := <-metricsErrCh:
+		return fmt.Errorf("failed to serve metrics endpoint: %w", err)
 	default:
 		return nil
 	}
