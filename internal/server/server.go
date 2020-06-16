@@ -86,6 +86,29 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 		}
 	}()
 
+	exporter := os.Getenv("OBSERVABILITY_EXPORTER")
+	if strings.EqualFold(exporter, "prometheus") {
+		go func() {
+			mux := http.NewServeMux()
+
+			exporter, err := prometheus.NewExporter(prometheus.Options{})
+			if err != nil {
+				logger.Infof("failed to create prometheus exporter: %v", err)
+			}
+
+			mux.Handle("/metrics", exporter)
+
+			srv, err := New("8888")
+			if err != nil {
+				logger.Infof("server.New: %w", err)
+			}
+
+			logger.Infof("listening on :%s", "8888")
+
+			srv.ServeHTTPHandler(ctx, mux)
+		}()
+	}
+
 	// Run the server. This will block until the provided context is closed.
 	if err := srv.Serve(s.listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("failed to serve: %w", err)
@@ -105,14 +128,10 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 // ServeHTTPHandler is a convenience wrapper around ServeHTTP. It creates an
 // HTTP server using the provided handler, wrapped in OpenCensus for
 // observability.
-func (s *Server) ServeHTTPHandler(ctx context.Context, mux *http.ServeMux) error {
-	err := ExposeMetricsIfPrometheus(mux)
-	if err != nil {
-		return err
-	}
+func (s *Server) ServeHTTPHandler(ctx context.Context, handler http.Handler) error {
 	return s.ServeHTTP(ctx, &http.Server{
 		Handler: &ochttp.Handler{
-			Handler: mux,
+			Handler: handler,
 		},
 	})
 }
@@ -165,19 +184,4 @@ func (s *Server) IP() string {
 // Port returns the server's listening port.
 func (s *Server) Port() string {
 	return s.port
-}
-
-// ExposeMetricsIfPrometheus adds the /metrics endpoint to a mux if the correct env var is set
-func ExposeMetricsIfPrometheus(mux *http.ServeMux) error {
-	exporter := os.Getenv("OBSERVABILITY_EXPORTER")
-	if strings.EqualFold(exporter, "prometheus") {
-		exporter, err := prometheus.NewExporter(prometheus.Options{})
-		if err != nil {
-			return fmt.Errorf("failed to create prometheus exporter: %v", err)
-		}
-
-		mux.Handle("/metrics", exporter)
-	}
-
-	return nil
 }
