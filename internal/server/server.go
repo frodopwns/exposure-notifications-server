@@ -21,9 +21,12 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
+	"contrib.go.opencensus.io/exporter/prometheus"
 	"github.com/google/exposure-notifications-server/internal/logging"
 	"go.opencensus.io/plugin/ochttp"
 	"google.golang.org/grpc"
@@ -102,10 +105,14 @@ func (s *Server) ServeHTTP(ctx context.Context, srv *http.Server) error {
 // ServeHTTPHandler is a convenience wrapper around ServeHTTP. It creates an
 // HTTP server using the provided handler, wrapped in OpenCensus for
 // observability.
-func (s *Server) ServeHTTPHandler(ctx context.Context, handler http.Handler) error {
+func (s *Server) ServeHTTPHandler(ctx context.Context, mux *http.ServeMux) error {
+	err := ExposeMetricsIfPrometheus(mux)
+	if err != nil {
+		return err
+	}
 	return s.ServeHTTP(ctx, &http.Server{
 		Handler: &ochttp.Handler{
-			Handler: handler,
+			Handler: mux,
 		},
 	})
 }
@@ -158,4 +165,19 @@ func (s *Server) IP() string {
 // Port returns the server's listening port.
 func (s *Server) Port() string {
 	return s.port
+}
+
+// ExposeMetricsIfPrometheus adds the /metrics endpoint to a mux if the correct env var is set
+func ExposeMetricsIfPrometheus(mux *http.ServeMux) error {
+	exporter := os.Getenv("OBSERVABILITY_EXPORTER")
+	if strings.EqualFold(exporter, "prometheus") {
+		exporter, err := prometheus.NewExporter(prometheus.Options{})
+		if err != nil {
+			return fmt.Errorf("failed to create prometheus exporter: %v", err)
+		}
+
+		mux.Handle("/metrics", exporter)
+	}
+
+	return nil
 }
